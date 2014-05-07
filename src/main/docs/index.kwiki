@@ -1,0 +1,19 @@
+== Proc Pipe ==
+Yet another thread/process abstraction... <br/>
+Why would we need another abstraction?
+
+Mostly, because when people only think about a problem in one way, there will be only one solution.
+When the only tool you have is a Hammer, all your problems are Nails.
+
+Take Transaction Management as an example.<br/>
+I needed to set up test data in one thread, manipulate it in another, verify the result and then roll all the changes back.<br/>
+A Pretty standard Given/When/Then test, except that the component to be tested was the implementation of a jobs sub system.<br/>
+There was no way to share a transaction between threads, and the amount of code that had to be written to enable it was distressing.
+
+Hence, Proc Pipe. An attempt to split a process up so that it can run different parts in different threads.<br/>
+If you take the 'single thread, single purpose' approach, you can split up processing as much as you want.<br/>
+
+Somewhat similar to Actors, but with more of a lean towards a defined flow that will keep more procedural programmers happy.
+
+And most of all, remember this:<br/>
+Don't bind your transaction to the thread.
