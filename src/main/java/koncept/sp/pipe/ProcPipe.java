@@ -1,6 +1,5 @@
 package koncept.sp.pipe;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import koncept.sp.ProcSplit;
@@ -23,6 +22,6 @@ import koncept.sp.ProcSplit;
  * @author nicholas.krul@gmail.com
  *
  */
-public interface ProcPipe {
-	public Future<Boolean> handle(ProcSplit in);
+public interface ProcPipe<T> {
+	public Future<T> handle(ProcSplit in);
 }

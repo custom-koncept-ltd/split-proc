@@ -2,16 +2,17 @@ package koncept.sp.pipe;
 
 import java.util.concurrent.ExecutorService;
 
-import koncept.sp.resource.ProcPipeCleaner;
+import koncept.sp.pipe.state.ProcState;
 import koncept.sp.stage.SplitProcStage;
 
 
-public interface ProcPipeDefinition  {
+public interface ProcPipeDefinition<T>  {
 	
 	public ExecutorService getExecutor(int currentStage);
 	public SplitProcStage getStage(int currentStage);
 	public int getNumberOfStages();
 	
-	public ProcPipeCleaner getErrorHandler();
-	public ProcPipeCleaner getCompletionHandler();
+	public void onComplete(ProcState<T> state);
+	public void onCancel(ProcState<T> state);
+	public void onError(ProcState<T> state, Throwable error);
 }

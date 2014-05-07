@@ -22,7 +22,7 @@ public class ProcPipeFuture<V> implements Future<V> {
 	private boolean completed;
 	private V result; //N.B. - there is no reason that the result can't be null
 	private Throwable error;
-	
+
 	public boolean markStarted() {
 		synchronized(lock) {
 			if (cancelled) return false;

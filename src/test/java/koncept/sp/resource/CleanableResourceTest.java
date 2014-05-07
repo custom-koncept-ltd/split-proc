@@ -24,7 +24,8 @@ public class CleanableResourceTest {
 		SingleExecutorProcPipe executorProcPipe = 
 				new SingleExecutorProcPipe(
 						Executors.newSingleThreadExecutor(), 
-						Arrays.asList(new AddCleanableResource(resource), trackerStage));
+						Arrays.asList(new AddCleanableResource(resource), trackerStage),
+						new SimpleProcTerminator(null));
 		
 		Future<Boolean> future = executorProcPipe.handle(new ProcSplit());
 		future.get();

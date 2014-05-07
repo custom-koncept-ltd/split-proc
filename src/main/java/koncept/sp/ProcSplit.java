@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import koncept.sp.resource.CleanableResource;
-import koncept.sp.resource.SimpleCleanableResource;
 
 public class ProcSplit {
 	public static final String DEFAULT_VALUE_KEY = "value";
@@ -33,8 +32,8 @@ public class ProcSplit {
 		return cleanableResources.get(name);
 	}
 	
-	public void removeCleanableResource(String name) {
-		cleanableResources.remove(name);
+	public CleanableResource removeCleanableResource(String name) {
+		return cleanableResources.remove(name);
 	}
 	
 	public ProcSplit add(String name, CleanableResource cleanableResource) {
