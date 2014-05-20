@@ -15,6 +15,7 @@ public class RunnableSplitProcStage<T> implements Runnable {
 	public void run() {
 		if (state.isCancellationRequested()) {
 			pipeDefinition.onCancel(state);
+			return;
 		}
 		
 		if (state.getNextStage() == 0)

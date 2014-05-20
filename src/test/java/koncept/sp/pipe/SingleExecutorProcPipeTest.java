@@ -17,8 +17,9 @@ import java.util.concurrent.TimeoutException;
 
 import koncept.sp.resource.SimpleProcTerminator;
 import koncept.sp.stage.TrackedSplitProcStage;
-import koncept.sp.stage.WaitForExecutionSplitState;
+import koncept.sp.stage.WaitForExecutionSplitStage;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -40,12 +41,18 @@ public class SingleExecutorProcPipeTest {
 		this.executor = executor;
 	}
 	
+	@After
+	public void cleanup() {
+		executor.shutdown();
+	}
+	
+	
 	@Test
 	public void inThread() throws InterruptedException {
 		TrackedSplitProcStage stage1 = new TrackedSplitProcStage();
 		TrackedSplitProcStage stage2 = new TrackedSplitProcStage();
 		TrackedSplitProcStage stage3 = stage1;
-		WaitForExecutionSplitState trackerStage = new WaitForExecutionSplitState();
+		WaitForExecutionSplitStage trackerStage = new WaitForExecutionSplitStage();
 		
 		SingleExecutorProcPipe executorProcPipe = 
 				new SingleExecutorProcPipe(
@@ -98,8 +105,7 @@ public class SingleExecutorProcPipeTest {
 		public boolean isTerminated() {
 			throw new UnsupportedOperationException();
 		}
-		public void shutdown() {
-			throw new UnsupportedOperationException();
+		public void shutdown() { //nop
 		}
 		public List<Runnable> shutdownNow() {
 			throw new UnsupportedOperationException();

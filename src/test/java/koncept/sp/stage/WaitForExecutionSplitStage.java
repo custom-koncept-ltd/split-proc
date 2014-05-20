@@ -4,7 +4,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import koncept.sp.ProcSplit;
 
-public class WaitForExecutionSplitState implements SplitProcStage {
+/**
+ * This class is designed for an external observer to wait for the stage to execute
+ * @author koncept
+ *
+ */
+public class WaitForExecutionSplitStage implements SplitProcStage {
 
 	private AtomicBoolean hasExecuted = new AtomicBoolean(false);
 	

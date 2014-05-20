@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 import koncept.sp.ProcSplit;
 import koncept.sp.pipe.SingleExecutorProcPipe;
 import koncept.sp.stage.SplitProcStage;
-import koncept.sp.stage.WaitForExecutionSplitState;
+import koncept.sp.stage.WaitForExecutionSplitStage;
 
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class CleanableResourceTest {
 
 	@Test
 	public void cleanIsCalledAfterPipeCompletes() throws Exception {
-		WaitForExecutionSplitState trackerStage = new WaitForExecutionSplitState();
+		WaitForExecutionSplitStage trackerStage = new WaitForExecutionSplitStage();
 		
 		final CleanableResourceCounter resource = new CleanableResourceCounter();
 		SingleExecutorProcPipe executorProcPipe = 
