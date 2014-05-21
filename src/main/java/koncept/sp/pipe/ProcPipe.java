@@ -23,5 +23,16 @@ import koncept.sp.ProcSplit;
  *
  */
 public interface ProcPipe<T> {
-	public Future<T> handle(ProcSplit in);
+	
+	/**
+	 * Starts the process
+	 * @param in
+	 * @return
+	 */
+	public Future<T> submit(ProcSplit in);
+	
+	/**
+	 * Stops the pipe (specifically, calls shutdown() on any underlying executors)
+	 */
+	public void stop();
 }

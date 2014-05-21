@@ -60,7 +60,7 @@ public class SingleExecutorProcPipeTest {
 						Arrays.asList(stage1, stage2, stage3, trackerStage),
 						new SimpleProcTerminator(null));
 		
-		executorProcPipe.handle(null);
+		executorProcPipe.submit(null);
 		
 		trackerStage.waitForExecution(500); //needs to be compatable with in-thread AND external thread
 		

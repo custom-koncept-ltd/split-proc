@@ -56,22 +56,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- disabled till its in central
-			<plugin>
-				<groupId>koncept.kwiki</groupId>
-				<artifactId>kwiki-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
-				<executions>
-					<execution>
-						<id>attach-userdocs</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>docs</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			 -->
 		</plugins>
 	</build>
 

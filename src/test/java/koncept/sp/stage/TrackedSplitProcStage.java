@@ -7,7 +7,7 @@ import koncept.sp.ProcSplit;
 
 public class TrackedSplitProcStage implements SplitProcStage {
 	private List<Long> executionTimes = new ArrayList<Long>();
-	public ProcSplit run(ProcSplit last) {
+	public ProcSplit run(ProcSplit last) throws Exception {
 		executionTimes.add(System.currentTimeMillis());
 		try {
 			Thread.sleep(100);

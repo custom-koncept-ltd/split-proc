@@ -39,7 +39,7 @@ public class InterruptionTest {
 	private ExecutorService executor;
 
 	@Test
-	public void cancelWillInterruptPipe() throws Exception {
+	public void cancelAndInterruptSplit() throws Exception {
 		TrackedSplitProcStage stage1 = new TrackedSplitProcStage();
 		WaitForExecutionSplitStage stage2 = new WaitForExecutionSplitStage();
 		WaitForNotificationSplitStage stage3 = new WaitForNotificationSplitStage();
@@ -52,7 +52,7 @@ public class InterruptionTest {
 						Arrays.asList(stage1, stage2, stage3, stage4),
 						new SimpleProcTerminator(null));
 		
-		Future<Object> procPipeFuture = executorProcPipe.handle(new ProcSplit());
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
 		
 		stage2.waitForExecution(500); //wait for stage 2 to execute
 		assertFalse(procPipeFuture.isCancelled());
@@ -77,7 +77,7 @@ public class InterruptionTest {
 	}
 	
 	@Test
-	public void cancelWillNotInterruptPipe() throws Exception {
+	public void cancelAndAllowSplitToComplete() throws Exception {
 		TrackedSplitProcStage stage1 = new TrackedSplitProcStage();
 		WaitForExecutionSplitStage stage2 = new WaitForExecutionSplitStage();
 		WaitForNotificationSplitStage stage3 = new WaitForNotificationSplitStage();
@@ -90,7 +90,7 @@ public class InterruptionTest {
 						Arrays.asList(stage1, stage2, stage3, stage4),
 						new SimpleProcTerminator(null));
 		
-		Future<Object> procPipeFuture = executorProcPipe.handle(new ProcSplit());
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
 		
 		stage2.waitForExecution(500); //wait for stage 2 to execute
 		assertFalse(procPipeFuture.isCancelled());

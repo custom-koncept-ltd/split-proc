@@ -27,7 +27,7 @@ public class CleanableResourceTest {
 						Arrays.asList(new AddCleanableResource(resource), trackerStage),
 						new SimpleProcTerminator(null));
 		
-		Future<Boolean> future = executorProcPipe.handle(new ProcSplit());
+		Future<Boolean> future = executorProcPipe.submit(new ProcSplit());
 		future.get();
 		
 		assertThat(resource.cleans, is(1));

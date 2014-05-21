@@ -33,10 +33,15 @@ public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>, ProcP
 		this.procTerminator = procTerminator;
 	}
 	
-	public Future<T> handle(ProcSplit in) {
+	public Future<T> submit(ProcSplit in) {
 		ProcPipeFuture<T> futureResult = new ProcPipeFuture<T>();
 		getExecutor(0).execute(new RunnableSplitProcStage(this, new ProcState(futureResult,in)));
 		return futureResult;
+	}
+	
+	public void stop() {
+		for(int i = 0; i < stages.size(); i++)
+			getExecutor(i).shutdown();
 	}
 	
 	public ExecutorService getExecutor(int currentStage) {
@@ -66,10 +71,8 @@ public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>, ProcP
 	}
 	
 	public void onError(ProcState<T> state, Throwable error) {
-		
 		//clean everything...
 		errorCleaner.clean(state.getLastSplit());
-		
 		state.getProcPipeFuture().markErrored(error);
 	}
 	
