@@ -80,9 +80,16 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -93,14 +100,14 @@
 	</dependencies>
 	<distributionManagement>
 		<repository>
-			<id>repository.custom-koncept.co.uk</id>
-			<name>repository.custom-koncept.co.uk-releases</name>
-			<url>http://repository.custom-koncept.co.uk/artifactory/public</url>
+			<id>sonatype-nexus-staging</id>
+			<name>sonatype-nexus-staging</name>
+			<url>https://oss.sonatype.org/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
-			<id>repository.custom-koncept.co.uk</id>
-			<name>repository.custom-koncept.co.uk-snapshots</name>
-			<url>http://repository.custom-koncept.co.uk/artifactory/public</url>
+			<id>sonatype-nexus-snapshots</id>
+			<name>sonatype-nexus-snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
