@@ -5,7 +5,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import koncept.sp.ProcSplit;
 
 /**
- * This class is designed for an external observer to wait for the stage to execute
+ * This class is designed for an external observer to wait for the stage to execute.
+ * Note that this will NOT wait forever
  * @author koncept
  *
  */
@@ -21,7 +22,6 @@ public class WaitForNotificationSplitStage implements SplitProcStage {
 	public WaitForNotificationSplitStage(long timeout) {
 		this.timeout = timeout;
 	}
-	
 	
 	
 	public ProcSplit run(ProcSplit last) throws Exception {

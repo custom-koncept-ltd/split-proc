@@ -71,6 +71,7 @@ public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T> {
 			getExecutor(state.getNextStage()).execute(new RunnableSplitProcStage<T>(this, state));
 		} else {
 			T result = procTerminator.terminate(state.getLastSplit());
+			tracker.completed(state);
 			state.getProcPipeFuture().markCompleted(result);
 		}
 	}

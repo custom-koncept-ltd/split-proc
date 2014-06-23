@@ -7,6 +7,10 @@ public class SimpleProcTerminator<T> extends ProcTerminator<T> {
 	private final String key;
 	private final ProcPipeCleaner cleaner;
 	
+	public SimpleProcTerminator() {
+		this(ProcSplit.DEFAULT_VALUE_KEY);
+	}
+	
 	public SimpleProcTerminator(String key) {
 		this(key, new SimpleProcPipeCleaner());
 	}
