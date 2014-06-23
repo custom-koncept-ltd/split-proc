@@ -47,6 +47,6 @@ public class ProcState<T> {
 	
 	public void markStarted() {
 		procPipeFuture.markStarted();
-	}
+	}	
 	
 }

@@ -3,6 +3,7 @@ package koncept.sp.pipe;
 import java.util.concurrent.Future;
 
 import koncept.sp.ProcSplit;
+import koncept.sp.tracker.JobTracker;
 
 /**
  * 
@@ -35,4 +36,10 @@ public interface ProcPipe<T> {
 	 * Stops the pipe (specifically, calls shutdown() on any underlying executors)
 	 */
 	public void stop();
+	
+	/**
+	 * Gets the job tracker
+	 * @return
+	 */
+	public JobTracker<T> tracker();
 }

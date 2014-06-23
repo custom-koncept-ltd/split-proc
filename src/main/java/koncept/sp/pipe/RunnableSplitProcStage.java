@@ -1,6 +1,7 @@
 package koncept.sp.pipe;
 
 import koncept.sp.ProcSplit;
+import koncept.sp.pipe.internal.ProcPipeDefinition;
 import koncept.sp.pipe.state.ProcState;
 
 public class RunnableSplitProcStage<T> implements Runnable {
@@ -15,11 +16,14 @@ public class RunnableSplitProcStage<T> implements Runnable {
 	public void run() {
 		if (state.isCancellationRequested()) {
 			pipeDefinition.onCancel(state);
+			pipeDefinition.tracker().completed(state);
 			return;
 		}
 		
-		if (state.getNextStage() == 0)
+		if (state.getNextStage() == 0) {
 			state.markStarted();
+			pipeDefinition.tracker().started(state);
+		}
 		
 		try {
 			ProcSplit out = pipeDefinition.getStage(state.getNextStage()).run(state.getLastSplit());

@@ -6,11 +6,14 @@ import java.util.concurrent.Future;
 
 import koncept.sp.ProcSplit;
 import koncept.sp.future.ProcPipeFuture;
+import koncept.sp.pipe.internal.ProcPipeDefinition;
 import koncept.sp.pipe.state.ProcState;
 import koncept.sp.resource.ProcPipeCleaner;
 import koncept.sp.resource.ProcTerminator;
 import koncept.sp.resource.SimpleProcPipeCleaner;
 import koncept.sp.stage.SplitProcStage;
+import koncept.sp.tracker.NullJobTracker;
+import koncept.sp.tracker.internal.JobTrackerDefinition;
 
 /**
  * 
@@ -20,7 +23,8 @@ import koncept.sp.stage.SplitProcStage;
  * @author nicholas.krul@gmail.com
  *
  */
-public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T>, ProcPipe<T> {
+public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T> {
+	private final JobTrackerDefinition<T> tracker;
 	private final ExecutorService executor;
 	private final List<SplitProcStage> stages;
 	
@@ -28,14 +32,21 @@ public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T>, ProcPip
 	private ProcPipeCleaner errorCleaner = new SimpleProcPipeCleaner();
 	
 	public SingleExecutorProcPipe(ExecutorService executor, List<SplitProcStage> stages, ProcTerminator<T> procTerminator) {
+		this(new NullJobTracker<T>(), executor, stages, procTerminator);
+	}
+	
+	public SingleExecutorProcPipe(JobTrackerDefinition<T> tracker, ExecutorService executor, List<SplitProcStage> stages, ProcTerminator<T> procTerminator) {
+		this.tracker = tracker;
 		this.stages = stages;
 		this.executor = executor;
 		this.procTerminator = procTerminator;
 	}
-	
+
 	public Future<T> submit(ProcSplit in) {
-		ProcPipeFuture<T> futureResult = new ProcPipeFuture<T>();
-		executor.execute(new RunnableSplitProcStage(this, new ProcState(futureResult,in)));
+		ProcPipeFuture<T> futureResult = new ProcPipeFuture<>();
+		ProcState<T> state = new ProcState<>(futureResult,in);
+		tracker.submitted(state);
+		getExecutor(0).execute(new RunnableSplitProcStage<>(this, state));
 		return futureResult;
 	}
 	
@@ -75,4 +86,7 @@ public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T>, ProcPip
 		state.getProcPipeFuture().markErrored(error);
 	}
 	
+	public JobTrackerDefinition<T> tracker() {
+		return tracker;
+	}
 }

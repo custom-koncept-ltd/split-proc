@@ -6,11 +6,14 @@ import java.util.concurrent.Future;
 
 import koncept.sp.ProcSplit;
 import koncept.sp.future.ProcPipeFuture;
+import koncept.sp.pipe.internal.ProcPipeDefinition;
 import koncept.sp.pipe.state.ProcState;
 import koncept.sp.resource.ProcPipeCleaner;
 import koncept.sp.resource.ProcTerminator;
 import koncept.sp.resource.SimpleProcPipeCleaner;
 import koncept.sp.stage.SplitProcStage;
+import koncept.sp.tracker.NullJobTracker;
+import koncept.sp.tracker.internal.JobTrackerDefinition;
 
 /**
  * 
@@ -20,22 +23,31 @@ import koncept.sp.stage.SplitProcStage;
  * @author nicholas.krul@gmail.com
  *
  */
-public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>, ProcPipe<T> {
+public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>{
+	private final JobTrackerDefinition<T> tracker;
 	private final List<ExecutorService> executors;
 	private final List<SplitProcStage> stages;
+	
 	
 	private ProcTerminator<T> procTerminator;
 	private ProcPipeCleaner errorCleaner = new SimpleProcPipeCleaner();
 	
 	public ExecutorPerStageProcPipe(List<ExecutorService> executors, List<SplitProcStage> stages, ProcTerminator<T> procTerminator) {
+		this(new NullJobTracker<T>(), executors, stages, procTerminator);
+	}
+	
+	public ExecutorPerStageProcPipe(JobTrackerDefinition<T> tracker, List<ExecutorService> executors, List<SplitProcStage> stages, ProcTerminator<T> procTerminator) {
+		this.tracker = tracker;
 		this.stages = stages;
 		this.executors = executors;
 		this.procTerminator = procTerminator;
 	}
 	
 	public Future<T> submit(ProcSplit in) {
-		ProcPipeFuture<T> futureResult = new ProcPipeFuture<T>();
-		getExecutor(0).execute(new RunnableSplitProcStage(this, new ProcState(futureResult,in)));
+		ProcPipeFuture<T> futureResult = new ProcPipeFuture<>();
+		ProcState<T> state = new ProcState<>(futureResult,in);
+		tracker.submitted(state);
+		getExecutor(0).execute(new RunnableSplitProcStage<>(this, state));
 		return futureResult;
 	}
 	
@@ -74,6 +86,10 @@ public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>, ProcP
 		//clean everything...
 		errorCleaner.clean(state.getLastSplit());
 		state.getProcPipeFuture().markErrored(error);
+	}
+	
+	public JobTrackerDefinition<T> tracker() {
+		return tracker;
 	}
 	
 }
