@@ -26,16 +26,27 @@ import koncept.sp.tracker.JobTracker;
 public interface ProcPipe<T> {
 	
 	/**
-	 * Starts the process
+	 * Starts a task.
 	 * @param in
 	 * @return
+	 * @throws IllegalStateException if the pipe has been 'stopped'
 	 */
-	public Future<T> submit(ProcSplit in);
+	public Future<T> submit(ProcSplit in) throws IllegalStateException;
 	
 	/**
-	 * Stops the pipe (specifically, calls shutdown() on any underlying executors)
+	 * if the pipe has been stopped,
+	 * @return if the pipe has been stopped, 
 	 */
-	public void stop();
+	public boolean isStopped();
+	
+	/**
+	 * Stops the pipe from accepting any more requests.
+	 * tasks currently being serviced will continue to run
+	 * @param stopExecutorOnCompletion - if true, will stop the underlying executor when the last task has completed
+	 * @param abortQueuedTasks - if true, any tasks on the queue will not be started.
+	 * @param interruptRunningTasks - if true, any running tasks won't start the next stage of their processing
+	 */
+	public void stop(boolean stopExecutorOnCompletion, boolean abortQueuedTasks, boolean interruptRunningTasks);
 	
 	/**
 	 * Gets the job tracker

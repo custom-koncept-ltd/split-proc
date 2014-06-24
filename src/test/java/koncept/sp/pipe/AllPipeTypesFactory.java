@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import koncept.sp.resource.SimpleProcTerminator;
 import koncept.sp.stage.SplitProcStage;
 import koncept.sp.stage.TrackedSplitProcStage;
-import koncept.sp.tracker.NullJobTracker;
+import koncept.sp.tracker.BlockingJobTracker;
 import koncept.sp.tracker.internal.JobTrackerDefinition;
 
 public class AllPipeTypesFactory {
@@ -35,7 +35,7 @@ public class AllPipeTypesFactory {
 	}
 	
 	public static ProcPipe create(Class<? extends ProcPipe> type, List<? extends SplitProcStage> stages) {
-		return create(type, stages, new NullJobTracker());
+		return create(type, stages, new BlockingJobTracker());
 	}
 	
 	public static ProcPipe create(Class<? extends ProcPipe> type, List<? extends SplitProcStage> stages, JobTrackerDefinition jobTracker) {

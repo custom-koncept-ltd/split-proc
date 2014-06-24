@@ -14,15 +14,10 @@ public class RunnableSplitProcStage<T> implements Runnable {
 	}
 	
 	public void run() {
-		if (state.isCancellationRequested()) {
+		boolean run = pipeDefinition.onStageStart(state);
+		if (!run) {
 			pipeDefinition.onCancel(state);
-			pipeDefinition.tracker().completed(state);
 			return;
-		}
-		
-		if (state.getNextStage() == 0) {
-			state.markStarted();
-			pipeDefinition.tracker().started(state);
 		}
 		
 		try {

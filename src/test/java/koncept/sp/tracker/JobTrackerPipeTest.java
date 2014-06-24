@@ -67,7 +67,7 @@ public class JobTrackerPipeTest {
 	
 	@After
 	public void cleanup() {
-		pipe.stop();
+		pipe.stop(true, true, true);
 	}
 	
 	@Test
