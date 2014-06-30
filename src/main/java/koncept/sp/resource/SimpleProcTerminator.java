@@ -2,7 +2,7 @@ package koncept.sp.resource;
 
 import koncept.sp.ProcSplit;
 
-public class SimpleProcTerminator<T> extends ProcTerminator<T> {
+public class SimpleProcTerminator<T> implements ProcTerminator<T> {
 
 	private final String key;
 	private final ProcPipeCleaner cleaner;

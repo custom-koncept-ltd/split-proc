@@ -12,7 +12,6 @@ import koncept.sp.future.ProcPipeFuture;
 public class ProcState<T> {
 
 	private final ProcPipeFuture<T> procPipeFuture;
-//	private final List<ProcSplit> splits = new ArrayList<ProcSplit>();
 	private int currentIndex = -1;
 	private ProcSplit lastSplit;
 	
@@ -22,13 +21,11 @@ public class ProcState<T> {
 	}
 	
 	public void addSplit(ProcSplit split) {
-//		splits.add(split);
 		lastSplit = split;
 		currentIndex++;
 	}
 	
 	public ProcSplit getLastSplit() {
-//		return splits.get(splits.size() - 1);
 		return lastSplit;
 	}
 	
@@ -37,7 +34,6 @@ public class ProcState<T> {
 	}
 	
 	public int getNextStage() {
-//		return splits.size() - 1;
 		return currentIndex;
 	}
 	

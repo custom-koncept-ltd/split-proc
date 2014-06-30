@@ -7,7 +7,7 @@
 	<groupId>com.kncept.sp</groupId>
 	<artifactId>split-proc</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
