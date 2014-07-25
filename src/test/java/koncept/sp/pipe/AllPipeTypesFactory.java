@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import koncept.sp.resource.SimpleProcPipeCleaner;
 import koncept.sp.resource.SimpleProcTerminator;
@@ -63,7 +64,7 @@ public class AllPipeTypesFactory {
 	}
 	
 	private static SingleExecutorProcPipe sepp(List<? extends SplitProcStage> stages, JobTrackerDefinition jobTracker) {
-		return new SingleExecutorProcPipe(SingleExecutorProcPipe.class.getName(), jobTracker, executor(), stages, new SimpleProcTerminator(), new SimpleProcPipeCleaner());
+		return new SingleExecutorProcPipe(Logger.getLogger(SingleExecutorProcPipe.class.getName()), jobTracker, executor(), stages, new SimpleProcTerminator(), new SimpleProcPipeCleaner());
 		
 	}
 	

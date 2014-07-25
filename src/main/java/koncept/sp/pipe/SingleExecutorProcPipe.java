@@ -35,17 +35,19 @@ public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T> {
 	private final PipeStatus pipeStatus = new PipeStatus();
 	
 	public SingleExecutorProcPipe(ExecutorService executor, List<SplitProcStage> stages, ProcTerminator<T> procTerminator) {
-		this(SingleExecutorProcPipe.class.getName(), new BlockingJobTracker<T>(), executor, stages, procTerminator, new SimpleProcPipeCleaner());
+		this(Logger.getLogger(SingleExecutorProcPipe.class.getName()), new BlockingJobTracker<T>(), executor, stages, procTerminator, new SimpleProcPipeCleaner());
 	}
 	
-	public SingleExecutorProcPipe(String loggerName, JobTrackerDefinition<T> tracker, ExecutorService executor, List<SplitProcStage> stages, ProcTerminator<T> procTerminator, SimpleProcPipeCleaner errorCleaner) {
+	public SingleExecutorProcPipe(Logger log, JobTrackerDefinition<T> tracker, ExecutorService executor, List<SplitProcStage> stages, ProcTerminator<T> procTerminator, ProcPipeCleaner errorCleaner) {
 		this.tracker = tracker;
 		this.stages = stages;
 		this.executor = executor;
 		this.procTerminator = procTerminator;
 		this.errorCleaner = errorCleaner;
-		log = Logger.getLogger(loggerName);
+		this.log = log;
 	}
+	
+	
 
 	public Future<T> submit(ProcSplit in) {
 		if (in == null) throw new NullPointerException();
@@ -109,28 +111,40 @@ public class SingleExecutorProcPipe<T> implements ProcPipeDefinition<T> {
 			log.log(Level.FINER, "Processing completed");
 			tracker.completed(state);
 			T result = procTerminator.extractFinalResult(state.getLastSplit());
-			procTerminator.clean(state.getLastSplit());
+			try {
+				procTerminator.clean(state.getLastSplit());
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Exception in procTerminator", e);
+				clean(state.getLastSplit());
+			}
 			state.getProcPipeFuture().markCompleted(result);
 		}
 		shutDownIfRequired();
 	}
-
 	
 	public void onCancel(ProcState<T> state) {
 		log.log(Level.FINE, "Processing cancelled at index " + state.getNextStage());
 		tracker.completed(state);
 		ProcPipeFuture<T> futureResult = state.getProcPipeFuture();
 		futureResult.acknowledgeCancellation();
-		errorCleaner.clean(state.getLastSplit());
+		clean(state.getLastSplit());
 		shutDownIfRequired();
 	}
 	
 	public void onError(ProcState<T> state, Throwable error) {
 		log.log(Level.WARNING, "Processing errored at index " + state.getNextStage(), error);
 		tracker.completed(state);
-		errorCleaner.clean(state.getLastSplit());
+		clean(state.getLastSplit());
 		state.getProcPipeFuture().markErrored(error);
 		shutDownIfRequired();
+	}
+	
+	private void clean(ProcSplit split) {
+		try {
+			errorCleaner.clean(split);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Exception in errorCleaner", e);
+		}
 	}
 	
 	private void shutDownIfRequired() {

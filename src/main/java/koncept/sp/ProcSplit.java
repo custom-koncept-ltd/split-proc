@@ -54,14 +54,14 @@ public class ProcSplit {
 		return cleanableResource == null ? null : cleanableResource.get();
 	}
 	
-	public ProcSplit clean(String name) {
+	public ProcSplit clean(String name) throws Exception {
 		CleanableResource cleanableResource = removeCleanableResource(name);
 		if (cleanableResource != null)
 			cleanableResource.clean();
 		return this;
 	}
 	
-	public ProcSplit clean() {
+	public ProcSplit clean() throws Exception {
 		for(NamedCleanableResource namedCleanableResource: namedCleanableResources)
 			namedCleanableResource.cleanableResources.clean();
 		namedCleanableResources.clear();

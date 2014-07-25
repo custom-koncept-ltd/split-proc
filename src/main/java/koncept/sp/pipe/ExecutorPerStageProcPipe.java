@@ -110,7 +110,12 @@ public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>{
 			log.log(Level.FINER, "Processing completed");
 			tracker.completed(state);
 			T result = procTerminator.extractFinalResult(state.getLastSplit());
-			procTerminator.clean(state.getLastSplit());
+			try {
+				procTerminator.clean(state.getLastSplit());
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Exception in procTerminator", e);
+				clean(state.getLastSplit());
+			}
 			state.getProcPipeFuture().markCompleted(result);
 		}
 		shutDownIfRequired();
@@ -121,7 +126,7 @@ public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>{
 		tracker.completed(state);
 		ProcPipeFuture<T> futureResult = state.getProcPipeFuture();
 		futureResult.acknowledgeCancellation();
-		errorCleaner.clean(state.getLastSplit());
+		clean(state.getLastSplit());
 		shutDownIfRequired();
 	}
 	
@@ -129,8 +134,16 @@ public class ExecutorPerStageProcPipe<T> implements ProcPipeDefinition<T>{
 		log.log(Level.WARNING, "Processing errored at index " + state.getNextStage(), error);
 		tracker.completed(state);
 		state.getProcPipeFuture().markErrored(error);
-		errorCleaner.clean(state.getLastSplit());
+		clean(state.getLastSplit());
 		shutDownIfRequired();
+	}
+	
+	private void clean(ProcSplit split) {
+		try {
+			errorCleaner.clean(split);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Exception in errorCleaner", e);
+		}
 	}
 	
 	public void shutDownIfRequired() {

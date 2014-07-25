@@ -27,6 +27,5 @@ public class RunnableSplitProcStage<T> implements Runnable {
 		} catch (Throwable t) {
 			pipeDefinition.onError(state, t);
 		}
-		
 	}
 }

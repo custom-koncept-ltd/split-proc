@@ -27,7 +27,7 @@ public class SimpleProcTerminator<T> implements ProcTerminator<T> {
 	}
 
 	@Override
-	public void clean(ProcSplit finalResult) {
+	public void clean(ProcSplit finalResult) throws Exception {
 		cleaner.clean(finalResult);
 	}
 

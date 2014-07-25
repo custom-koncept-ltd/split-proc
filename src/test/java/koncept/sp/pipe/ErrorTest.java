@@ -12,10 +12,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import koncept.sp.ProcSplit;
+import koncept.sp.resource.ProcPipeCleaner;
+import koncept.sp.resource.SimpleProcPipeCleaner;
 import koncept.sp.resource.SimpleProcTerminator;
 import koncept.sp.stage.TrackedExceptionSplitProcStage;
 import koncept.sp.stage.TrackedSplitProcStage;
 import koncept.sp.stage.WaitForExecutionSplitStage;
+import koncept.sp.tracker.BlockingJobTracker;
+import koncept.util.ExceptionRecordingLogger;
+import koncept.util.ExceptionRecordingLogger.LogMessage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,12 +47,16 @@ public class ErrorTest {
 		TrackedExceptionSplitProcStage stage3 = new TrackedExceptionSplitProcStage();
 		TrackedSplitProcStage stage4 = new TrackedSplitProcStage();
 		
+		ExceptionRecordingLogger logger = new ExceptionRecordingLogger();
 		
 		SingleExecutorProcPipe<Object> executorProcPipe = 
-				new SingleExecutorProcPipe<Object>(
+				new SingleExecutorProcPipe(
+						logger,
+						new BlockingJobTracker(),
 						executor,  
 						Arrays.asList(stage1, stage2, stage3, stage4),
-						new SimpleProcTerminator(null));
+						new SimpleProcTerminator(null),
+						new SimpleProcPipeCleaner());
 		
 		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
 		
@@ -62,5 +71,49 @@ public class ErrorTest {
 		
 		assertThat(stage1.count(), is(1));
 		assertThat(stage4.count(), is(0));
+//		logger.output(System.out);
+	}
+	
+	@Test
+	public void exceptionOnErrorIsHandled() throws Exception {
+		ProcPipeCleaner exceptionThrowingStub = new ExceptionThrowingStub();
+		ExceptionRecordingLogger logger = new ExceptionRecordingLogger();
+		SingleExecutorProcPipe<Object> executorProcPipe = 
+				new SingleExecutorProcPipe (
+						logger,
+						new BlockingJobTracker(),
+						executor,  
+						Arrays.asList(new TrackedExceptionSplitProcStage()),
+						new SimpleProcTerminator(null),
+						exceptionThrowingStub);
+		
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
+		
+		//wait for the future to be fulfilled - will be an error in this case (!!)
+		try {
+			procPipeFuture.get();
+		} catch (ExecutionException e) {
+			assertThat(e.getCause().getMessage(), is(TrackedExceptionSplitProcStage.TEST_EXCEPTION_MESSAGE));
+		}
+		
+		boolean foundErrorCleanerException = false;
+		for(LogMessage log: logger.logs) 
+			if (log.thrown != null)
+				if (ExceptionThrowingStub.TEST_EXCEPTION_MESSAGE.equals(log.thrown.getMessage()))
+						foundErrorCleanerException = true;
+		
+		assertThat(foundErrorCleanerException, is(true));
+//		logger.output(System.out);
+	}
+	
+	
+	
+	
+	private static class ExceptionThrowingStub implements ProcPipeCleaner {
+		public static final String TEST_EXCEPTION_MESSAGE = "ExceptionThrowingStub Test Exception Message";
+		@Override
+		public void clean(ProcSplit last) throws Exception {
+			throw new Exception(TEST_EXCEPTION_MESSAGE);
+		}
 	}
 }
