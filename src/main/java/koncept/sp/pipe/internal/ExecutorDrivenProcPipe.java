@@ -105,15 +105,16 @@ public abstract  class ExecutorDrivenProcPipe<T> implements ProcPipeDefinition<T
 			getExecutor(state.currentIndex()).execute(new RunnableSplitProcStage<T>(this, state));
 		} else {
 			log.log(Level.FINER, "Processing completed");
-			tracker.completed(state);
-			T result = procTerminator.extractFinalResult(state.data());
 			try {
+				T result = procTerminator.extractFinalResult(state.data());
 				procTerminator.clean(state.data());
+				tracker.completed(state);
+				state.future().markCompleted(result);
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Exception in procTerminator", e);
-				clean(state.data());
+				onError(state, e);
 			}
-			state.future().markCompleted(result);
+			
 		}
 		shutDownIfRequired();
 	}

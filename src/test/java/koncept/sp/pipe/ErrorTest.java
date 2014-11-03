@@ -92,6 +92,7 @@ public class ErrorTest {
 		//wait for the future to be fulfilled - will be an error in this case (!!)
 		try {
 			procPipeFuture.get();
+			fail("Expected an execution exception");
 		} catch (ExecutionException e) {
 			assertThat(e.getCause().getMessage(), is(TrackedExceptionSplitProcStage.TEST_EXCEPTION_MESSAGE));
 		}
@@ -99,15 +100,11 @@ public class ErrorTest {
 		boolean foundErrorCleanerException = false;
 		for(LogMessage log: logger.logs) 
 			if (log.thrown != null)
-				if (ExceptionThrowingStub.TEST_EXCEPTION_MESSAGE.equals(log.thrown.getMessage()))
+				if (log.thrown.getMessage().contains(ExceptionThrowingStub.TEST_EXCEPTION_MESSAGE))
 						foundErrorCleanerException = true;
 		
 		assertThat(foundErrorCleanerException, is(true));
-//		logger.output(System.out);
 	}
-	
-	
-	
 	
 	private static class ExceptionThrowingStub implements ProcPipeCleaner {
 		public static final String TEST_EXCEPTION_MESSAGE = "ExceptionThrowingStub Test Exception Message";
