@@ -99,10 +99,7 @@ public class ErrorTest {
 		
 		boolean foundErrorCleanerException = false;
 		for(LogMessage log: logger.logs) 
-			if (log.thrown != null)
-				if (log.thrown.getMessage().contains(ExceptionThrowingStub.TEST_EXCEPTION_MESSAGE))
-						foundErrorCleanerException = true;
-		
+			if (log.toString().contains(ExceptionThrowingStub.TEST_EXCEPTION_MESSAGE))
 		assertThat(foundErrorCleanerException, is(true));
 	}
 	

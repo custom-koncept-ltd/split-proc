@@ -9,7 +9,7 @@ public interface JobTrackerDefinition<T> extends JobTracker<T> {
 	public void started(InternalProcState<T> state);
 	/**
 	 * on success or failure, the job is marked as completed
-	 * @param future
+	 * @param state
 	 */
 	public void completed(InternalProcState<T> state);
 	
