@@ -1,48 +1,38 @@
 package koncept.sp.pipe.state;
 
-import koncept.sp.ProcSplit;
-import koncept.sp.future.ProcPipeFuture;
+import koncept.sp.ProcData;
+import koncept.sp.future.CancellationToken;
+import koncept.sp.future.CancellationToken.WrappedCancellationToken;
+import koncept.sp.pipe.internal.InternalProcState;
 
-/**
- * Only tracks the last proc state, because we would like to allow the
- * garbage collector to be able to clean up when it wants
- * @author nick
- *
- */
-public class ProcState<T> {
+public class ProcState {
 
-	private final ProcPipeFuture<T> procPipeFuture;
-	private int currentIndex = -1;
-	private ProcSplit lastSplit;
+	private final CancellationToken cancellationToken;
+	private final int currentIndex;
+	private final ProcData data;
 	
-	public ProcState(ProcPipeFuture<T> procPipeFuture, ProcSplit initial) {
-		this.procPipeFuture = procPipeFuture;
-		addSplit(initial);
+	public ProcState(InternalProcState<?> internalState) {
+		this(internalState.future(), internalState.data(), internalState.currentIndex());
 	}
 	
-	public void addSplit(ProcSplit split) {
-		lastSplit = split;
-		currentIndex++;
+	public ProcState(CancellationToken cancellationToken, ProcData data, int currentIndex) {
+		this.cancellationToken = new WrappedCancellationToken(cancellationToken);
+		this.currentIndex = currentIndex;
+		this.data= data;
 	}
 	
-	public ProcSplit getLastSplit() {
-		return lastSplit;
+	public CancellationToken getCancellationToken() {
+		return cancellationToken;
 	}
 	
-	public ProcPipeFuture<T> getProcPipeFuture() {
-		return procPipeFuture;
-	}
-	
-	public int getNextStage() {
+	public int getCurrentIndex() {
 		return currentIndex;
 	}
 	
-	public boolean isCancellationRequested() {
-		return procPipeFuture.cancelRequested();
+	public ProcData getData() {
+		return data;
 	}
 	
-	public void markStarted() {
-		procPipeFuture.markStarted();
-	}	
+	
 	
 }

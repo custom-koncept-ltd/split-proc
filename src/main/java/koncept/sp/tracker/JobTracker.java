@@ -3,11 +3,11 @@ package koncept.sp.tracker;
 import java.util.List;
 import java.util.Set;
 
-import koncept.sp.pipe.state.ProcState;
+import koncept.sp.pipe.internal.InternalProcState;
 
 public interface JobTracker<T> {
 
-	List<ProcState<T>> queued();
-	Set<ProcState<T>> live();
+	List<InternalProcState<T>> queued();
+	Set<InternalProcState<T>> live();
 	
 }

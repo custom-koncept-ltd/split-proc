@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import koncept.sp.pipe.state.ProcState;
+import koncept.sp.pipe.internal.InternalProcState;
 import koncept.sp.tracker.internal.JobTrackerDefinition;
 
 /**
@@ -17,32 +17,32 @@ import koncept.sp.tracker.internal.JobTrackerDefinition;
  */
 public class BlockingJobTracker<T> implements JobTrackerDefinition<T> {
 
-	private final List<ProcState<T>> queued = new LinkedList<>();
-	private final Set<ProcState<T>> live = new HashSet<>();
+	private final List<InternalProcState<T>> queued = new LinkedList<>();
+	private final Set<InternalProcState<T>> live = new HashSet<>();
 	
 	@Override
-	public List<ProcState<T>> queued() {
-		return new ArrayList<ProcState<T>>(queued);
+	public List<InternalProcState<T>> queued() {
+		return new ArrayList<InternalProcState<T>>(queued);
 	}
 
 	@Override
-	public Set<ProcState<T>> live() {
-		return new HashSet<ProcState<T>>(live);
+	public Set<InternalProcState<T>> live() {
+		return new HashSet<InternalProcState<T>>(live);
 	}
 
 	@Override
-	public synchronized void submitted(ProcState<T> state) {
+	public synchronized void submitted(InternalProcState<T> state) {
 		queued.add(state);
 	}
 
 	@Override
-	public synchronized void started(ProcState<T> state) {
+	public synchronized void started(InternalProcState<T> state) {
 		queued.remove(state);
 		live.add(state);
 	}
 
 	@Override
-	public synchronized void completed(ProcState<T> state) {
+	public synchronized void completed(InternalProcState<T> state) {
 		live.remove(state);
 	}
 

@@ -12,7 +12,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 import koncept.sp.pipe.AllPipeTypesFactory;
 import koncept.sp.pipe.ProcPipe;
 import koncept.sp.stage.AllJobTrackerTypesFactory;
@@ -78,7 +78,7 @@ public class JobTrackerPipeTest {
 	
 	@Test
 	public void movesToLiveAndThenOutOnSuccess() throws Exception {
-		Future future = pipe.submit(new ProcSplit());
+		Future future = pipe.submit(new ProcData());
 		stage2.waitForExecution(500);
 		assertTrue(pipe.tracker().queued().isEmpty());
 		assertThat(pipe.tracker().live().size(), is(1));
@@ -90,7 +90,7 @@ public class JobTrackerPipeTest {
 	
 	@Test
 	public void movesToLiveAndThenOutOnCancel() throws Exception {
-		Future future = pipe.submit(new ProcSplit());
+		Future future = pipe.submit(new ProcData());
 		stage2.waitForExecution(500);
 		assertTrue(pipe.tracker().queued().isEmpty());
 		assertThat(pipe.tracker().live().size(), is(1));

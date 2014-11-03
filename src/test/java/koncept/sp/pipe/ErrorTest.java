@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 import koncept.sp.resource.ProcPipeCleaner;
 import koncept.sp.resource.SimpleProcPipeCleaner;
 import koncept.sp.resource.SimpleProcTerminator;
@@ -58,7 +58,7 @@ public class ErrorTest {
 						new SimpleProcTerminator(null),
 						new SimpleProcPipeCleaner());
 		
-		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcData());
 		
 		try { //has to fail with the test exception
 			procPipeFuture.get();
@@ -87,7 +87,7 @@ public class ErrorTest {
 						new SimpleProcTerminator(null),
 						exceptionThrowingStub);
 		
-		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcData());
 		
 		//wait for the future to be fulfilled - will be an error in this case (!!)
 		try {
@@ -112,7 +112,7 @@ public class ErrorTest {
 	private static class ExceptionThrowingStub implements ProcPipeCleaner {
 		public static final String TEST_EXCEPTION_MESSAGE = "ExceptionThrowingStub Test Exception Message";
 		@Override
-		public void clean(ProcSplit last) throws Exception {
+		public void clean(ProcData last) throws Exception {
 			throw new Exception(TEST_EXCEPTION_MESSAGE);
 		}
 	}

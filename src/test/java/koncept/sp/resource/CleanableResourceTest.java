@@ -7,8 +7,9 @@ import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 import koncept.sp.pipe.SingleExecutorProcPipe;
+import koncept.sp.pipe.state.ProcState;
 import koncept.sp.stage.SplitProcStage;
 import koncept.sp.stage.WaitForExecutionSplitStage;
 
@@ -27,7 +28,7 @@ public class CleanableResourceTest {
 						Arrays.asList(new AddCleanableResource(resource), trackerStage),
 						new SimpleProcTerminator(null));
 		
-		Future<Boolean> future = executorProcPipe.submit(new ProcSplit());
+		Future<Boolean> future = executorProcPipe.submit(new ProcData());
 		future.get();
 		
 		assertThat(resource.cleans, is(1));
@@ -38,8 +39,8 @@ public class CleanableResourceTest {
 		public AddCleanableResource(CleanableResource cleanableResource) {
 			this.cleanableResource = cleanableResource;
 		}
-		public ProcSplit run(ProcSplit last) {
-			return last.add("name", cleanableResource);
+		public ProcData run(ProcState last) {
+			return last.getData().add("name", cleanableResource);
 		}
 	}
 }

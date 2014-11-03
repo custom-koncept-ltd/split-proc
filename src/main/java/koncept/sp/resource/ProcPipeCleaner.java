@@ -1,9 +1,9 @@
 package koncept.sp.resource;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 
 public interface ProcPipeCleaner {
 
-	public void clean(ProcSplit last) throws Exception;
+	public void clean(ProcData last) throws Exception;
 	
 }

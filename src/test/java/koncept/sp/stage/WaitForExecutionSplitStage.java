@@ -2,7 +2,8 @@ package koncept.sp.stage;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
+import koncept.sp.pipe.state.ProcState;
 
 /**
  * This class is designed for an external observer to wait for the stage to execute
@@ -13,12 +14,12 @@ public class WaitForExecutionSplitStage implements SplitProcStage {
 
 	private AtomicBoolean hasExecuted = new AtomicBoolean(false);
 	
-	public ProcSplit run(ProcSplit last) {
+	public ProcData run(ProcState last) {
 		synchronized(hasExecuted) {
 			hasExecuted.set(true);
 			hasExecuted.notify();
 		}
-		return last;
+		return last.getData();
 	}
 	
 	public void waitForExecution(long timeout) throws InterruptedException {

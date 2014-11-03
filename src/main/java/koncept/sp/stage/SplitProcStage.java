@@ -1,7 +1,8 @@
 package koncept.sp.stage;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
+import koncept.sp.pipe.state.ProcState;
 
 public interface SplitProcStage {
-	public ProcSplit run(ProcSplit last) throws Exception;
+	public ProcData run(ProcState state) throws Exception;
 }

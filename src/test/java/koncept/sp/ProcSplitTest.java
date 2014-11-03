@@ -12,10 +12,10 @@ public class ProcSplitTest {
 	@Test
 	public void defaultKey() {
 		CleanableResource cr = new NonCleanableResource("testString");
-		ProcSplit ps = new ProcSplit(cr);
+		ProcData ps = new ProcData(cr);
 		assertThat(ps.getResourceNames().size(), is(1));
-		assertThat(ps.getCleanableResource(ProcSplit.DEFAULT_VALUE_KEY), is(cr));
-		assertThat(ps.getResource(ProcSplit.DEFAULT_VALUE_KEY), is((Object)"testString"));
+		assertThat(ps.getCleanableResource(ProcData.DEFAULT_VALUE_KEY), is(cr));
+		assertThat(ps.getResource(ProcData.DEFAULT_VALUE_KEY), is((Object)"testString"));
 	}
 	
 }

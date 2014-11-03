@@ -14,7 +14,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @param <V>
  */
-public class ProcPipeFuture<V> implements Future<V> {
+public class ProcPipeFuture<V> implements Future<V>, CancellationToken {
 	private final Object lock = new Object();
 	private boolean cancelRequested;
 	private boolean cancelled;
@@ -60,6 +60,11 @@ public class ProcPipeFuture<V> implements Future<V> {
 		}
 	}
 	
+	@Override
+	public void cancel() {
+		this.cancel(true, false);
+	}
+	
 	/*
 cancel
 boolean cancel(boolean mayInterruptIfRunning)
@@ -71,7 +76,12 @@ mayInterruptIfRunning - true if the thread executing this task should be interru
 Returns:
 false if the task could not be cancelled, typically because it has already completed normally; true otherwise
 	 */
+	@Override
 	public boolean cancel(boolean mayInterruptIfRunning ) {
+		return cancel(mayInterruptIfRunning, true);
+	}
+	
+	public boolean cancel(boolean mayInterruptIfRunning, boolean waitForTermination) {
 		synchronized(lock) {
 			if (completed)
 				return false;
@@ -81,7 +91,7 @@ false if the task could not be cancelled, typically because it has already compl
 				return true;
 			} else if (mayInterruptIfRunning) {
 				cancelRequested = true;
-				try {
+				if (waitForTermination) try {
 					lock.wait(); //will wait till cancel is acknowledged, or the job completes
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -107,6 +117,7 @@ CancellationException - if the computation was cancelled
 ExecutionException - if the computation threw an exception 
 InterruptedException - if the current thread was interrupted while waiting
 	 */
+	@Override
 	public V get() throws InterruptedException, ExecutionException {
 		synchronized(lock) {
 			if (cancelled)
@@ -172,12 +183,14 @@ TimeoutException - if the wait timed out
 		}
 	};
 	
+	@Override
 	public boolean isCancelled() {
 		synchronized(lock) {
 			return cancelled;
 		}
 	}
 	
+	@Override
 	public boolean isDone() {
 		synchronized(lock) {
 			return completed || cancelled;

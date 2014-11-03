@@ -1,6 +1,6 @@
 package koncept.sp.resource;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 
 public class SimpleProcTerminator<T> implements ProcTerminator<T> {
 
@@ -8,7 +8,7 @@ public class SimpleProcTerminator<T> implements ProcTerminator<T> {
 	private final ProcPipeCleaner cleaner;
 	
 	public SimpleProcTerminator() {
-		this(ProcSplit.DEFAULT_VALUE_KEY);
+		this(ProcData.DEFAULT_VALUE_KEY);
 	}
 	
 	public SimpleProcTerminator(String key) {
@@ -21,13 +21,13 @@ public class SimpleProcTerminator<T> implements ProcTerminator<T> {
 	}
 	
 	@Override
-	public T extractFinalResult(ProcSplit finalResult) {
+	public T extractFinalResult(ProcData finalResult) {
 		CleanableResource resource = finalResult.removeCleanableResource(key);
 		return resource == null ? null : (T)resource.get();
 	}
 
 	@Override
-	public void clean(ProcSplit finalResult) throws Exception {
+	public void clean(ProcData finalResult) throws Exception {
 		cleaner.clean(finalResult);
 	}
 

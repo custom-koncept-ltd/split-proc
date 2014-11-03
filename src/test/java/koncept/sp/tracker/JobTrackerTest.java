@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 import koncept.sp.future.ProcPipeFuture;
-import koncept.sp.pipe.state.ProcState;
+import koncept.sp.pipe.internal.InternalProcState;
 import koncept.sp.tracker.internal.JobTrackerDefinition;
 
 import org.junit.Before;
@@ -58,7 +58,7 @@ public class JobTrackerTest {
 	
 	@Test
 	public void canStartJobs() {
-		ProcState ps = newProcState();
+		InternalProcState ps = newProcState();
 		jobTrackerDefinition.submitted(ps);
 		jobTrackerDefinition.started(ps);
 		
@@ -69,7 +69,7 @@ public class JobTrackerTest {
 	@Test
 	public void startingJobsWithAQueue() {
 		jobTrackerDefinition.submitted(newProcState());
-		ProcState ps = newProcState();
+		InternalProcState ps = newProcState();
 		jobTrackerDefinition.submitted(ps);
 		jobTrackerDefinition.started(ps);
 		
@@ -78,8 +78,8 @@ public class JobTrackerTest {
 	}
 	
 	
-	private ProcState newProcState() {
-		return new ProcState(new ProcPipeFuture(), new ProcSplit());
+	private InternalProcState newProcState() {
+		return new InternalProcState(new ProcPipeFuture(), new ProcData());
 	}
 	
 }

@@ -1,14 +1,15 @@
 package koncept.sp.pipe;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
+import koncept.sp.pipe.internal.InternalProcState;
 import koncept.sp.pipe.internal.ProcPipeDefinition;
 import koncept.sp.pipe.state.ProcState;
 
 public class RunnableSplitProcStage<T> implements Runnable {
 	private final ProcPipeDefinition<T> pipeDefinition;
-	private final ProcState<T> state;
+	private final InternalProcState<T> state;
 	
-	public RunnableSplitProcStage(ProcPipeDefinition<T> pipeDefinition, ProcState<T> state) {
+	public RunnableSplitProcStage(ProcPipeDefinition<T> pipeDefinition, InternalProcState<T> state) {
 		this.pipeDefinition = pipeDefinition;
 		this.state = state;
 	}
@@ -21,9 +22,8 @@ public class RunnableSplitProcStage<T> implements Runnable {
 		}
 		
 		try {
-			ProcSplit out = pipeDefinition.getStage(state.getNextStage()).run(state.getLastSplit());
-			state.addSplit(out); //getNextStage is now +1
-			pipeDefinition.onComplete(state);
+			ProcData data = pipeDefinition.getStage(state.currentIndex()).run(new ProcState(state));
+			pipeDefinition.onComplete(state, data);
 		} catch (Throwable t) {
 			pipeDefinition.onError(state, t);
 		}

@@ -6,24 +6,24 @@ import java.util.List;
 
 import koncept.sp.resource.CleanableResource;
 
-public class ProcSplit {
+public class ProcData {
 	public static final String DEFAULT_VALUE_KEY = "value";
 	private final List<NamedCleanableResource> namedCleanableResources;
 
-	public ProcSplit() {
+	public ProcData() {
 		this(new LinkedList<NamedCleanableResource>());
 	}
 	
-	public ProcSplit(ProcSplit previousStep) {
+	public ProcData(ProcData previousStep) {
 		this(new LinkedList<NamedCleanableResource>(previousStep.namedCleanableResources));
 	}
 	
-	public ProcSplit(CleanableResource value) {
+	public ProcData(CleanableResource value) {
 		this();
 		add(DEFAULT_VALUE_KEY, value);
 	}
 	
-	private ProcSplit(List<NamedCleanableResource> cleanableResources) {
+	private ProcData(List<NamedCleanableResource> cleanableResources) {
 		this.namedCleanableResources = cleanableResources;
 	}
 	
@@ -44,7 +44,7 @@ public class ProcSplit {
 	}
 	
 	//push it to the front - the default cleanup will clean newer resources first (its a stack)
-	public ProcSplit add(String name, CleanableResource cleanableResource) {
+	public ProcData add(String name, CleanableResource cleanableResource) {
 		namedCleanableResources.add(0, new NamedCleanableResource(name, cleanableResource));
 		return this;
 	}
@@ -54,14 +54,14 @@ public class ProcSplit {
 		return cleanableResource == null ? null : cleanableResource.get();
 	}
 	
-	public ProcSplit clean(String name) throws Exception {
+	public ProcData clean(String name) throws Exception {
 		CleanableResource cleanableResource = removeCleanableResource(name);
 		if (cleanableResource != null)
 			cleanableResource.clean();
 		return this;
 	}
 	
-	public ProcSplit clean() throws Exception {
+	public ProcData clean() throws Exception {
 		for(NamedCleanableResource namedCleanableResource: namedCleanableResources)
 			namedCleanableResource.cleanableResources.clean();
 		namedCleanableResources.clear();

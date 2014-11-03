@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 import koncept.sp.resource.SimpleProcTerminator;
 import koncept.sp.stage.TrackedSplitProcStage;
 import koncept.sp.stage.WaitForExecutionSplitStage;
@@ -61,7 +61,7 @@ public class SingleExecutorProcPipeTest {
 						Arrays.asList(stage1, stage2, stage3, trackerStage),
 						new SimpleProcTerminator(null));
 		
-		executorProcPipe.submit(new ProcSplit());
+		executorProcPipe.submit(new ProcData());
 		
 		trackerStage.waitForExecution(500); //needs to be compatable with in-thread AND external thread
 		

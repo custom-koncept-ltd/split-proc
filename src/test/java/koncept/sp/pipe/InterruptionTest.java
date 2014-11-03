@@ -14,8 +14,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
+import koncept.sp.pipe.state.ProcState;
 import koncept.sp.resource.SimpleProcTerminator;
+import koncept.sp.stage.SplitProcStage;
 import koncept.sp.stage.TrackedSplitProcStage;
 import koncept.sp.stage.WaitForExecutionSplitStage;
 import koncept.sp.stage.WaitForNotificationSplitStage;
@@ -52,7 +54,7 @@ public class InterruptionTest {
 						Arrays.asList(stage1, stage2, stage3, stage4),
 						new SimpleProcTerminator(null));
 		
-		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcData());
 		
 		stage2.waitForExecution(500); //wait for stage 2 to execute
 		assertFalse(procPipeFuture.isCancelled());
@@ -72,8 +74,35 @@ public class InterruptionTest {
 		
 		assertTrue(procPipeFuture.isCancelled());
 		assertTrue(procPipeFuture.isDone());
+	}
+	
+	@Test
+	public void internalCancel() throws Exception {
+		TrackedSplitProcStage stage1 = new TrackedSplitProcStage();
+		CancelStage stage2 = new CancelStage();
+		TrackedSplitProcStage stage3 = new TrackedSplitProcStage();
 		
 		
+		SingleExecutorProcPipe<Object> executorProcPipe = 
+				new SingleExecutorProcPipe<Object>(
+						executor,  
+						Arrays.asList(stage1, stage2, stage3),
+						new SimpleProcTerminator(null));
+		
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcData());
+		
+		try {
+		   //needs to be able to wait till the future is completely completed
+			procPipeFuture.get(500, MILLISECONDS);
+			fail();
+		} catch (CancellationException e) {
+		}
+		
+		assertThat(stage1.count(), is(1));
+		assertThat(stage3.count(), is(0));
+		
+		assertTrue(procPipeFuture.isCancelled());
+		assertTrue(procPipeFuture.isDone());
 	}
 	
 	@Test
@@ -90,7 +119,7 @@ public class InterruptionTest {
 						Arrays.asList(stage1, stage2, stage3, stage4),
 						new SimpleProcTerminator(null));
 		
-		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcSplit());
+		Future<Object> procPipeFuture = executorProcPipe.submit(new ProcData());
 		
 		stage2.waitForExecution(500); //wait for stage 2 to execute
 		assertFalse(procPipeFuture.isCancelled());
@@ -108,6 +137,14 @@ public class InterruptionTest {
 		assertFalse(procPipeFuture.isCancelled());
 		assertTrue(procPipeFuture.isDone());
 		
+	}
+	
+	public static class CancelStage implements SplitProcStage {
+		@Override
+		public ProcData run(ProcState state) throws Exception {
+			state.getCancellationToken().cancel();
+			return state.getData();
+		}
 	}
 	
 }

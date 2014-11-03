@@ -3,18 +3,19 @@ package koncept.sp.stage;
 import java.util.ArrayList;
 import java.util.List;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
+import koncept.sp.pipe.state.ProcState;
 
 public class TrackedSplitProcStage implements SplitProcStage {
 	private List<Long> executionTimes = new ArrayList<Long>();
-	public ProcSplit run(ProcSplit last) throws Exception {
+	public ProcData run(ProcState last) throws Exception {
 		executionTimes.add(System.currentTimeMillis());
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
-		return last;
+		return last.getData();
 	}
 	
 	public int count() {

@@ -7,37 +7,37 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import koncept.sp.pipe.state.ProcState;
+import koncept.sp.pipe.internal.InternalProcState;
 import koncept.sp.tracker.internal.JobTrackerDefinition;
 
 public class CopyOnWriteJobTracker<T> implements JobTrackerDefinition<T> {
 
-	private final CopyOnWriteArrayList<ProcState<T>> queued = new CopyOnWriteArrayList<>();
-	private final CopyOnWriteArraySet<ProcState<T>> live = new CopyOnWriteArraySet<>();
+	private final CopyOnWriteArrayList<InternalProcState<T>> queued = new CopyOnWriteArrayList<>();
+	private final CopyOnWriteArraySet<InternalProcState<T>> live = new CopyOnWriteArraySet<>();
 	
 	@Override
-	public List<ProcState<T>> queued() {
-		return new ArrayList<ProcState<T>>(queued);
+	public List<InternalProcState<T>> queued() {
+		return new ArrayList<InternalProcState<T>>(queued);
 	}
 
 	@Override
-	public Set<ProcState<T>> live() {
-		return new HashSet<ProcState<T>>(live);
+	public Set<InternalProcState<T>> live() {
+		return new HashSet<InternalProcState<T>>(live);
 	}
 
 	@Override
-	public void submitted(ProcState<T> state) {
+	public void submitted(InternalProcState<T> state) {
 		queued.add(state);
 	}
 
 	@Override
-	public void started(ProcState<T> state) {
+	public void started(InternalProcState<T> state) {
 		queued.remove(state);
 		live.add(state);
 	}
 
 	@Override
-	public void completed(ProcState<T> state) {
+	public void completed(InternalProcState<T> state) {
 		live.remove(state);
 	}
 

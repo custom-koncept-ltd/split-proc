@@ -2,7 +2,7 @@ package koncept.sp.pipe;
 
 import java.util.concurrent.Future;
 
-import koncept.sp.ProcSplit;
+import koncept.sp.ProcData;
 import koncept.sp.tracker.JobTracker;
 
 /**
@@ -31,7 +31,7 @@ public interface ProcPipe<T> {
 	 * @return
 	 * @throws IllegalStateException if the pipe has been 'stopped'
 	 */
-	public Future<T> submit(ProcSplit in) throws IllegalStateException;
+	public Future<T> submit(ProcData in) throws IllegalStateException;
 	
 	/**
 	 * if the pipe has been stopped,
